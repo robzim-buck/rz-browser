@@ -7,7 +7,9 @@ app = Flask(__name__)
 
 # Configure the root directory that users can browse
 # Change this to the directory you want to expose
-ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+# ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+
+ROOT_DIR = '/mnt/core/work'
 
 
 @app.route('/')
