@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Browser</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        .breadcrumb {
+            margin-bottom: 20px;
+            padding: 8px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .item-list {
+            list-style: none;
+            padding: 0;
+        }
+        .item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .item:hover {
+            background-color: #f9f9f9;
+        }
+        .item a {
+            text-decoration: none;
+            color: #333;
+        }
+        .folder {
+            color: #007bff;
+        }
+        .file {
+            color: #495057;
+        }
+        .icon {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>File Browser</h1>
+    
+    <div class="breadcrumb">
+        <a href="/">Root</a>
+        {% if current_path != root_dir %}
+            {% set parts = current_path.replace(root_dir, '').split('/') %}
+            {% set current = root_dir %}
+            {% for part in parts %}
+                {% if part %}
+                    {% set current = current + '/' + part %}
+                    / <a href="/browse?path={{ current }}">{{ part }}</a>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+    
+    {% if parent_dir %}
+        <p><a href="/browse?path={{ parent_dir }}">&larr; Back to parent directory</a></p>
+    {% endif %}
+    
+    <ul class="item-list">
+        {% for item in items %}
+            <li class="item">
+                {% if item.type == 'dir' %}
+                    <span class="icon folder">📁</span>
+                    <a href="/browse?path={{ item.path }}">{{ item.name }}/</a>
+                {% else %}
+                    <span class="icon file">📄</span>
+                    <a href="/browse?path={{ item.path }}">{{ item.name }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
