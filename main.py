@@ -34,7 +34,26 @@ def browse(path):
 
     if os.path.isfile(abs_path):
         # return send_file(abs_path)
-        return abs_path
+        parent_dir = os.path.dirname(abs_path)
+        return f'''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>File Path</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; padding: 20px; }}
+                .path {{ background: #f4f4f4; padding: 15px; border-radius: 5px; word-break: break-all; margin-bottom: 20px; }}
+                .back-btn {{ padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }}
+                .back-btn:hover {{ background: #0056b3; }}
+            </style>
+        </head>
+        <body>
+            <h2>File Path</h2>
+            <div class="path"><code>{abs_path}</code></div>
+            <a href="/browse?path={parent_dir}" class="back-btn">← Back</a>
+        </body>
+        </html>
+        '''
 
     # List the directory contents
     items = []
