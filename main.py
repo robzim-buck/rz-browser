@@ -128,7 +128,7 @@ def browse(path):
 
     # Sort directories first, then files
     items.sort(key=lambda x: (0 if x["type"] == "dir" else 1, x["name"].lower()))
-    items = [_ for _ in items if '.Lost_Found' not in _['name']]
+    items = [_ for _ in items if '.Lost+Found' not in _['name']]
     parent_dir = os.path.dirname(abs_path) if abs_path != ROOT_DIR else None
 
     return render_template('browse.html', 
