@@ -33,7 +33,8 @@ def browse(path):
         abort(404)  # Not found
 
     if os.path.isfile(abs_path):
-        return send_file(abs_path)
+        # return send_file(abs_path)
+        return abs_path
 
     # List the directory contents
     items = []
@@ -59,4 +60,4 @@ def browse(path):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    app.run(debug=True, port=8000, host='0.0.0.0')
