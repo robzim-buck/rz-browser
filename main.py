@@ -14,6 +14,15 @@ ROOT_DIR = '/mnt/core/work/current/rztest'
 if 'MB' in socket.gethostname():
     ROOT_DIR = '/Users/robzimmelman/Documents/VSCode'
 
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """Serve static files from templates directory"""
+    templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
+    file_path = os.path.join(templates_dir, filename)
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return send_file(file_path)
+    abort(404)
+
 @app.route('/')
 def index():
     return browse(ROOT_DIR)
