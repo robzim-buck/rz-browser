@@ -100,7 +100,7 @@ def browse(path):
             <div class="container">
                 <h2>📄 File Path</h2>
                 <div class="path">{abs_path}</div>
-                <a href="/browse?path={parent_dir}" class="back-btn">← Back</a>
+                <a href="/browse?path={parent_dir}" class="back-btn">← Back to {parent_dir}</a>
             </div>
         </body>
         </html>
