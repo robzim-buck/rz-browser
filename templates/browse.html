@@ -149,7 +149,7 @@
         </div>
 
         <div class="breadcrumb">
-            <a href="/">Root</a>
+            <a href="/">{{root_dir}}</a>
             {% if current_path != root_dir %}
                 {% set parts = current_path.replace(root_dir, '').split('/') %}
                 {% set current = root_dir %}
