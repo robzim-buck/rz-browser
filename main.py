@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request, send_file, abort
 import os
-from pathlib import Path
+import socket
 import mimetypes
+from pathlib import Path
+from flask import Flask, render_template, request, send_file, abort
 
 app = Flask(__name__)
 
@@ -10,7 +11,8 @@ app = Flask(__name__)
 # ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 ROOT_DIR = '/mnt/core/work/current/rztest'
-
+if 'MB' in socket.gethostname():
+    ROOT_DIR = '/Users/robzimmelman/Documents/VSCode'
 
 @app.route('/')
 def index():
@@ -41,16 +43,65 @@ def browse(path):
         <head>
             <title>File Path</title>
             <style>
-                body {{ font-family: Arial, sans-serif; padding: 20px; }}
-                .path {{ background: #f4f4f4; padding: 15px; border-radius: 5px; word-break: break-all; margin-bottom: 20px; }}
-                .back-btn {{ padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }}
-                .back-btn:hover {{ background: #0056b3; }}
+                * {{ box-sizing: border-box; }}
+                body {{
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                    padding: 40px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    margin: 0;
+                }}
+                .container {{
+                    max-width: 800px;
+                    margin: 0 auto;
+                    background: rgba(255, 255, 255, 0.95);
+                    border-radius: 16px;
+                    padding: 40px;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    backdrop-filter: blur(10px);
+                }}
+                h2 {{
+                    margin: 0 0 24px 0;
+                    color: #1a1a2e;
+                    font-weight: 600;
+                    font-size: 1.5rem;
+                }}
+                .path {{
+                    background: #1a1a2e;
+                    padding: 20px;
+                    border-radius: 12px;
+                    word-break: break-all;
+                    margin-bottom: 24px;
+                    font-family: 'SF Mono', 'Fira Code', monospace;
+                    font-size: 0.9rem;
+                    color: #a5f3fc;
+                    border: 1px solid #374151;
+                }}
+                .back-btn {{
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 12px 24px;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+                }}
+                .back-btn:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+                }}
             </style>
         </head>
         <body>
-            <h2>File Path</h2>
-            <div class="path"><code>{abs_path}</code></div>
-            <a href="/browse?path={parent_dir}" class="back-btn">← Back</a>
+            <div class="container">
+                <h2>📄 File Path</h2>
+                <div class="path">{abs_path}</div>
+                <a href="/browse?path={parent_dir}" class="back-btn">← Back</a>
+            </div>
         </body>
         </html>
         '''
