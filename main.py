@@ -10,7 +10,7 @@ app = Flask(__name__)
 # Change this to the directory you want to expose
 # ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-ROOT_DIR = '/mnt/core/hs_nycdc/repo'
+ROOT_DIR = '/srv/salt'
 if 'MB' in socket.gethostname():
     ROOT_DIR = '/Users/robzimmelman/Documents/VSCode'
 
