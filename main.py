@@ -167,23 +167,6 @@ def browse(path):
                     transform: translateY(-2px);
                     box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
                 }}
-                .download-btn {{
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 12px 24px;
-                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-                    color: white;
-                    text-decoration: none;
-                    border-radius: 8px;
-                    font-weight: 500;
-                    transition: all 0.3s ease;
-                    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-                }}
-                .download-btn:hover {{
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
-                }}
             </style>
         </head>
         <body>
@@ -193,7 +176,6 @@ def browse(path):
                 <div class="btn-group">
                     <a href="/browse?path={parent_dir}" class="back-btn">← Back to {parent_dir}</a>
                     <a href="/view?path={abs_path}" class="view-btn">👁 View File</a>
-                    <a href="/download?path={abs_path}" class="download-btn">⬇ Download File</a>
                 </div>
             </div>
         </body>
