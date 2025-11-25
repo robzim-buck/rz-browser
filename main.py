@@ -2,7 +2,7 @@ import os
 import socket
 import mimetypes
 from pathlib import Path
-from flask import Flask, render_template, request, send_file, abort
+from flask import Flask, render_template, request, send_file, abort, Response
 
 app = Flask(__name__)
 
@@ -32,6 +32,48 @@ def index():
 def browse_path():
     requested_path = request.args.get('path', ROOT_DIR)
     return browse(requested_path)
+
+
+@app.route('/view')
+def view_file():
+    """Serve a file for viewing in browser"""
+    requested_path = request.args.get('path', '')
+    abs_path = os.path.abspath(requested_path)
+
+    # Security check: ensure the path is within the ROOT_DIR
+    if not abs_path.startswith(ROOT_DIR):
+        abort(403)
+
+    if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
+        abort(404)
+
+    # Get mimetype to display inline in browser
+    mimetype, _ = mimetypes.guess_type(abs_path)
+    if mimetype is None:
+        mimetype = 'text/plain'
+
+    with open(abs_path, 'rb') as f:
+        content = f.read()
+
+    response = Response(content, mimetype=mimetype)
+    response.headers['Content-Disposition'] = 'inline'
+    return response
+
+
+@app.route('/download')
+def download_file():
+    """Serve a file for download"""
+    requested_path = request.args.get('path', '')
+    abs_path = os.path.abspath(requested_path)
+
+    # Security check: ensure the path is within the ROOT_DIR
+    if not abs_path.startswith(ROOT_DIR):
+        abort(403)
+
+    if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
+        abort(404)
+
+    return send_file(abs_path, as_attachment=True)
 
 
 def browse(path):
@@ -103,13 +145,56 @@ def browse(path):
                     transform: translateY(-2px);
                     box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
                 }}
+                .btn-group {{
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                }}
+                .view-btn {{
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 12px 24px;
+                    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+                }}
+                .view-btn:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+                }}
+                .download-btn {{
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 12px 24px;
+                    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 8px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+                }}
+                .download-btn:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6);
+                }}
             </style>
         </head>
         <body>
             <div class="container">
                 <h2>📄 File Path</h2>
                 <div class="path">{abs_path}</div>
-                <a href="/browse?path={parent_dir}" class="back-btn">← Back to {parent_dir}</a>
+                <div class="btn-group">
+                    <a href="/browse?path={parent_dir}" class="back-btn">← Back to {parent_dir}</a>
+                    <a href="/view?path={abs_path}" class="view-btn">👁 View File</a>
+                    <a href="/download?path={abs_path}" class="download-btn">⬇ Download File</a>
+                </div>
             </div>
         </body>
         </html>
