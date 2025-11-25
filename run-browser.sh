@@ -1,3 +1,4 @@
 #!/bin/bash
-cd /root/robz/rz-browser/
-.venv/bin/python main.py  --host=0.0.0.0 --workers=4 --port=5000
+set -e
+cd /root/robz/rz-browser/ || exit 1
+exec /root/robz/rz-browser/.venv/bin/python /root/robz/rz-browser/main.py
