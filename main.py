@@ -1,6 +1,7 @@
 import os
 import socket
 import mimetypes
+import html
 from pathlib import Path
 from flask import Flask, render_template, request, send_file, abort, Response
 
@@ -36,7 +37,7 @@ def browse_path():
 
 @app.route('/view')
 def view_file():
-    """Serve a file for viewing in browser"""
+    """Serve a file for viewing in browser with styled header"""
     requested_path = request.args.get('path', '')
     abs_path = os.path.abspath(requested_path)
 
@@ -47,17 +48,115 @@ def view_file():
     if not os.path.exists(abs_path) or not os.path.isfile(abs_path):
         abort(404)
 
-    # Get mimetype to display inline in browser
-    mimetype, _ = mimetypes.guess_type(abs_path)
-    if mimetype is None:
-        mimetype = 'text/plain'
+    parent_dir = os.path.dirname(abs_path)
+    filename = os.path.basename(abs_path)
 
-    with open(abs_path, 'rb') as f:
-        content = f.read()
+    # Try to read file content as text
+    try:
+        with open(abs_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+        escaped_content = html.escape(content)
+    except (UnicodeDecodeError, Exception):
+        escaped_content = "[Binary file - cannot display as text]"
 
-    response = Response(content, mimetype=mimetype)
-    response.headers['Content-Disposition'] = 'inline'
-    return response
+    return f'''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>{html.escape(filename)}</title>
+        <style>
+            * {{ box-sizing: border-box; }}
+            body {{
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                padding: 40px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                margin: 0;
+            }}
+            .container {{
+                max-width: 1200px;
+                margin: 0 auto;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 16px;
+                padding: 40px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(10px);
+            }}
+            .header {{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 24px;
+                flex-wrap: wrap;
+                gap: 16px;
+            }}
+            h2 {{
+                margin: 0;
+                color: #1a1a2e;
+                font-weight: 600;
+                font-size: 1.5rem;
+            }}
+            .path {{
+                background: #1a1a2e;
+                padding: 12px 16px;
+                border-radius: 8px;
+                word-break: break-all;
+                margin-bottom: 24px;
+                font-family: 'SF Mono', 'Fira Code', monospace;
+                font-size: 0.85rem;
+                color: #a5f3fc;
+                border: 1px solid #374151;
+            }}
+            .back-btn {{
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 12px 24px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                text-decoration: none;
+                border-radius: 8px;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            }}
+            .back-btn:hover {{
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            }}
+            .file-content {{
+                background: #1a1a2e;
+                border-radius: 12px;
+                padding: 24px;
+                overflow: auto;
+                max-height: 70vh;
+                border: 1px solid #374151;
+            }}
+            .file-content pre {{
+                margin: 0;
+                font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+                font-size: 0.9rem;
+                color: #e2e8f0;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                line-height: 1.6;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h2>{html.escape(filename)}</h2>
+                <a href="/browse?path={parent_dir}" class="back-btn">Back</a>
+            </div>
+            <div class="path">{html.escape(abs_path)}</div>
+            <div class="file-content">
+                <pre>{escaped_content}</pre>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
 
 
 @app.route('/download')
